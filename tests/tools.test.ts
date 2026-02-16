@@ -1,6 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { RendrKitClient } from "../src/api-client.js";
+
+interface ToolContent { type: string; text: string }
+interface ToolResult { content: ToolContent[]; isError?: boolean }
+type ToolHandler = (...args: unknown[]) => Promise<ToolResult>;
 import { registerGenerateImageTool } from "../src/tools/generate-image.js";
 import { registerGetImageTool } from "../src/tools/get-image.js";
 import { registerListBrandKitsTool } from "../src/tools/list-brand-kits.js";
@@ -87,7 +91,6 @@ describe("Tool Registration", () => {
 
   it("should register all 4 tools via createServer", () => {
     const mcpServer = createServer(client);
-    const spy = vi.spyOn(mcpServer, "registerTool");
 
     // Tools are already registered during createServer, so we verify
     // by checking the server was created successfully
@@ -133,7 +136,7 @@ describe("Tool Handlers", () => {
       const spy = vi.spyOn(server, "registerTool");
       registerGenerateImageTool(server, client);
 
-      const handler = spy.mock.calls[0]![2] as Function;
+      const handler = spy.mock.calls[0]![2] as ToolHandler;
       const result = await handler(
         { prompt: "A test image", size: "1080x1080", style: "modern" },
         {},
@@ -156,7 +159,7 @@ describe("Tool Handlers", () => {
       const spy = vi.spyOn(server, "registerTool");
       registerGenerateImageTool(server, client);
 
-      const handler = spy.mock.calls[0]![2] as Function;
+      const handler = spy.mock.calls[0]![2] as ToolHandler;
       const result = await handler({ prompt: "test" }, {});
 
       expect(result.isError).toBe(true);
@@ -180,7 +183,7 @@ describe("Tool Handlers", () => {
       const spy = vi.spyOn(server, "registerTool");
       registerGenerateImageTool(server, client);
 
-      const handler = spy.mock.calls[0]![2] as Function;
+      const handler = spy.mock.calls[0]![2] as ToolHandler;
       await handler(
         { prompt: "test", brand_kit_id: "bk_123" },
         {},
@@ -212,7 +215,7 @@ describe("Tool Handlers", () => {
       const spy = vi.spyOn(server, "registerTool");
       registerGetImageTool(server, client);
 
-      const handler = spy.mock.calls[0]![2] as Function;
+      const handler = spy.mock.calls[0]![2] as ToolHandler;
       const result = await handler({ id: "img_456" }, {});
 
       expect(result.content[0].text).toContain("img_456");
@@ -229,7 +232,7 @@ describe("Tool Handlers", () => {
       const spy = vi.spyOn(server, "registerTool");
       registerGetImageTool(server, client);
 
-      const handler = spy.mock.calls[0]![2] as Function;
+      const handler = spy.mock.calls[0]![2] as ToolHandler;
       const result = await handler({ id: "img_nonexistent" }, {});
 
       expect(result.isError).toBe(true);
@@ -256,7 +259,7 @@ describe("Tool Handlers", () => {
       const spy = vi.spyOn(server, "registerTool");
       registerListBrandKitsTool(server, client);
 
-      const handler = spy.mock.calls[0]![2] as Function;
+      const handler = spy.mock.calls[0]![2] as ToolHandler;
       const result = await handler({});
 
       expect(result.content[0].text).toContain("Corporate");
@@ -272,7 +275,7 @@ describe("Tool Handlers", () => {
       const spy = vi.spyOn(server, "registerTool");
       registerListBrandKitsTool(server, client);
 
-      const handler = spy.mock.calls[0]![2] as Function;
+      const handler = spy.mock.calls[0]![2] as ToolHandler;
       const result = await handler({});
 
       expect(result.content[0].text).toContain("No brand kits found");
@@ -288,7 +291,7 @@ describe("Tool Handlers", () => {
       const spy = vi.spyOn(server, "registerTool");
       registerListBrandKitsTool(server, client);
 
-      const handler = spy.mock.calls[0]![2] as Function;
+      const handler = spy.mock.calls[0]![2] as ToolHandler;
       const result = await handler({});
 
       expect(result.isError).toBe(true);
@@ -312,7 +315,7 @@ describe("Tool Handlers", () => {
       const spy = vi.spyOn(server, "registerTool");
       registerGetUsageTool(server, client);
 
-      const handler = spy.mock.calls[0]![2] as Function;
+      const handler = spy.mock.calls[0]![2] as ToolHandler;
       const result = await handler({});
 
       expect(result.content[0].text).toContain("pro");
@@ -329,7 +332,7 @@ describe("Tool Handlers", () => {
       const spy = vi.spyOn(server, "registerTool");
       registerGetUsageTool(server, client);
 
-      const handler = spy.mock.calls[0]![2] as Function;
+      const handler = spy.mock.calls[0]![2] as ToolHandler;
       const result = await handler({});
 
       expect(result.isError).toBe(true);
