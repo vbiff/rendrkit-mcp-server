@@ -6,14 +6,14 @@ MCP (Model Context Protocol) server for RendrKit. Lets AI assistants like Claude
 
 ### Claude Desktop
 
-Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS, `%APPDATA%\Claude\claude_desktop_config.json` on Windows):
 
 ```json
 {
   "mcpServers": {
     "rendrkit": {
-      "command": "node",
-      "args": ["/path/to/@rendrkit/mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@rendrkit/mcp"],
       "env": {
         "RENDRKIT_API_KEY": "rk_your_api_key_here"
       }
@@ -24,14 +24,14 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 
 ### Cursor
 
-Add to your Cursor MCP settings (`.cursor/mcp.json`):
+Add to `.cursor/mcp.json` in your project root:
 
 ```json
 {
   "mcpServers": {
     "rendrkit": {
-      "command": "node",
-      "args": ["/path/to/@rendrkit/mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@rendrkit/mcp"],
       "env": {
         "RENDRKIT_API_KEY": "rk_your_api_key_here"
       }
@@ -40,7 +40,9 @@ Add to your Cursor MCP settings (`.cursor/mcp.json`):
 }
 ```
 
-### npx (after publishing)
+### Windsurf
+
+Add to your Windsurf MCP config (`~/.codeium/windsurf/mcp_config.json`):
 
 ```json
 {
