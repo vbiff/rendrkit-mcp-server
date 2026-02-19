@@ -43,10 +43,37 @@ export interface UsageStats {
 
 /** Parameters for the generate image API call */
 export interface GenerateImageParams {
-  prompt: string;
+  prompt?: string;
   size?: string;
   style?: string;
   brandKitId?: string;
+  templateId?: string;
+  slots?: Record<string, string>;
+  photoQuery?: string;
+  imageUrl?: string;
+}
+
+/** A single slot definition within a template */
+export interface TemplateSlot {
+  name: string;
+  required: boolean;
+  description: string;
+}
+
+/** A template definition */
+export interface Template {
+  id: string;
+  name: string;
+  description: string;
+  bestFor: string;
+  needsPhoto: boolean;
+  slots: TemplateSlot[];
+}
+
+/** Response from the templates endpoint */
+export interface TemplatesResponse {
+  count: number;
+  templates: Template[];
 }
 
 /** API error response */

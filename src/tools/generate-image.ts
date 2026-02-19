@@ -10,11 +10,34 @@ export function registerGenerateImageTool(
     "generate_image",
     {
       description:
-        "Generate a professionally designed image from a text description. Creates production-ready images with clean layouts, crisp text, and consistent branding. Perfect for social media posts, banners, OG images, thumbnails, and more.",
+        "Generate a marketing image. Two modes: (1) Prompt mode — provide a text prompt and AI picks the template. (2) Direct mode (recommended) — provide templateId + slots for precise control. Use list_templates to see available templates.",
       inputSchema: {
         prompt: z
           .string()
-          .describe("Description of the image to generate"),
+          .optional()
+          .describe("Text prompt describing the image (used in prompt mode)"),
+        template_id: z
+          .string()
+          .optional()
+          .describe(
+            "Template ID for direct render mode. Use list_templates to see options.",
+          ),
+        slots: z
+          .record(z.string(), z.string())
+          .optional()
+          .describe(
+            "Template slot values. Keys are slot names, values are strings.",
+          ),
+        photo_query: z
+          .string()
+          .optional()
+          .describe(
+            "1-3 word search query for background photo (e.g. 'italian restaurant'). Only used with photo templates when no image_url is provided.",
+          ),
+        image_url: z
+          .string()
+          .optional()
+          .describe("URL of your own image to use as background"),
         size: z
           .string()
           .optional()
@@ -35,10 +58,14 @@ export function registerGenerateImageTool(
           ),
       },
     },
-    async ({ prompt, size, style, brand_kit_id }) => {
+    async ({ prompt, template_id, slots, photo_query, image_url, size, style, brand_kit_id }) => {
       try {
         const image = await client.generateImage({
           prompt,
+          templateId: template_id,
+          slots,
+          photoQuery: photo_query,
+          imageUrl: image_url,
           size,
           style,
           brandKitId: brand_kit_id,

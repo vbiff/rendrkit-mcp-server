@@ -9,6 +9,7 @@ import { registerGenerateImageTool } from "../src/tools/generate-image.js";
 import { registerGetImageTool } from "../src/tools/get-image.js";
 import { registerListBrandKitsTool } from "../src/tools/list-brand-kits.js";
 import { registerGetUsageTool } from "../src/tools/get-usage.js";
+import { registerListTemplatesTool } from "../src/tools/list-templates.js";
 import { createServer } from "../src/server.js";
 
 describe("Tool Registration", () => {
@@ -29,9 +30,13 @@ describe("Tool Registration", () => {
     expect(spy).toHaveBeenCalledWith(
       "generate_image",
       expect.objectContaining({
-        description: expect.stringContaining("Generate a professionally designed image"),
+        description: expect.stringContaining("Generate a marketing image"),
         inputSchema: expect.objectContaining({
           prompt: expect.anything(),
+          template_id: expect.anything(),
+          slots: expect.anything(),
+          photo_query: expect.anything(),
+          image_url: expect.anything(),
           size: expect.anything(),
           style: expect.anything(),
           brand_kit_id: expect.anything(),
@@ -89,7 +94,7 @@ describe("Tool Registration", () => {
     );
   });
 
-  it("should register all 4 tools via createServer", () => {
+  it("should register all 5 tools via createServer", () => {
     const mcpServer = createServer(client);
 
     // Tools are already registered during createServer, so we verify
@@ -104,8 +109,9 @@ describe("Tool Registration", () => {
     registerGetImageTool(server2, client);
     registerListBrandKitsTool(server2, client);
     registerGetUsageTool(server2, client);
+    registerListTemplatesTool(server2, client);
 
-    expect(spy2).toHaveBeenCalledTimes(4);
+    expect(spy2).toHaveBeenCalledTimes(5);
   });
 });
 

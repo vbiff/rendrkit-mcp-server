@@ -4,6 +4,7 @@ import type {
   BrandKit,
   UsageStats,
   GenerateImageParams,
+  TemplatesResponse,
 } from "./types.js";
 
 export class RendrKitApiError extends Error {
@@ -61,12 +62,20 @@ export class RendrKitClient {
   }
 
   async generateImage(params: GenerateImageParams): Promise<GeneratedImage> {
-    return this.request<GeneratedImage>("POST", "/api/v1/generate", {
-      prompt: params.prompt,
-      size: params.size,
-      style: params.style,
-      brandKitId: params.brandKitId,
-    });
+    const body: Record<string, unknown> = {};
+    if (params.prompt) body.prompt = params.prompt;
+    if (params.templateId) body.templateId = params.templateId;
+    if (params.slots) body.slots = params.slots;
+    if (params.photoQuery) body.photoQuery = params.photoQuery;
+    if (params.imageUrl) body.imageUrl = params.imageUrl;
+    if (params.size) body.size = params.size;
+    if (params.style) body.style = params.style;
+    if (params.brandKitId) body.brandKitId = params.brandKitId;
+    return this.request<GeneratedImage>("POST", "/api/v1/generate", body);
+  }
+
+  async listTemplates(): Promise<TemplatesResponse> {
+    return this.request<TemplatesResponse>("GET", "/api/v1/templates");
   }
 
   async getImage(id: string): Promise<ImageDetails> {
