@@ -39,10 +39,10 @@ export function registerGenerateImageTool(
           .optional()
           .describe("URL of your own image to use as background"),
         size: z
-          .string()
+          .enum(["1080x1080", "1200x628", "1080x1920", "1200x1200"])
           .optional()
           .describe(
-            "Image dimensions (e.g. '1080x1080', '1200x628', '1280x720')",
+            "Image size: '1080x1080' (Instagram, default), '1200x628' (OG/Twitter), '1080x1920' (Stories/Reels), '1200x1200' (Instagram HD)",
           ),
         style: z
           .enum(["modern", "playful", "corporate", "dark", "minimal", "bold"])
@@ -81,10 +81,11 @@ export function registerGenerateImageTool(
                 `URL: ${image.url}`,
                 `ID: ${image.id}`,
                 `Size: ${image.width}x${image.height}`,
+                image.templateId ? `Template: ${image.templateId}` : null,
                 `Style: ${image.style}`,
                 `Prompt: ${image.prompt}`,
                 `Created: ${image.createdAt}`,
-              ].join("\n"),
+              ].filter(Boolean).join("\n"),
             },
           ],
         };

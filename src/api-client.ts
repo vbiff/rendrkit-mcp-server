@@ -5,7 +5,14 @@ import type {
   UsageStats,
   GenerateImageParams,
   TemplatesResponse,
+  UploadResult,
 } from "./types.js";
+
+export interface UploadImageParams {
+  url?: string;
+  base64?: string;
+  mimeType?: string;
+}
 
 export class RendrKitApiError extends Error {
   constructor(
@@ -88,5 +95,13 @@ export class RendrKitClient {
 
   async getUsage(): Promise<UsageStats> {
     return this.request<UsageStats>("GET", "/api/v1/usage");
+  }
+
+  async uploadImage(params: UploadImageParams): Promise<UploadResult> {
+    const body: Record<string, unknown> = {};
+    if (params.url) body.url = params.url;
+    if (params.base64) body.base64 = params.base64;
+    if (params.mimeType) body.mimeType = params.mimeType;
+    return this.request<UploadResult>("POST", "/api/v1/upload", body);
   }
 }

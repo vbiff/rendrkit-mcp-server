@@ -1,3 +1,4 @@
+import { z } from "zod/v4";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { RendrKitClient } from "../api-client.js";
 
@@ -10,18 +11,28 @@ export function registerListTemplatesTool(
     {
       description:
         "List all available image templates with their slot definitions. Use this to discover which templates exist and what slots they accept for direct rendering with generate_image.",
-      inputSchema: {},
+      inputSchema: {
+        tag: z
+          .string()
+          .optional()
+          .describe(
+            'Filter by tag (e.g. "photo", "gradient", "event", "food", "tech")',
+          ),
+      },
     },
-    async () => {
+    async ({ tag }) => {
       try {
         const result = await client.listTemplates();
+        const templates = tag
+          ? result.templates.filter((t) => t.tags?.includes(tag))
+          : result.templates;
 
         const lines = [
-          `${result.count} templates available:`,
+          `${templates.length} templates${tag ? ` matching tag "${tag}"` : ""} available:`,
           "",
         ];
 
-        for (const t of result.templates) {
+        for (const t of templates) {
           const requiredSlots = t.slots
             .filter((s) => s.required)
             .map((s) => s.name);
@@ -33,6 +44,7 @@ export function registerListTemplatesTool(
             `**${t.id}** — ${t.description}`,
             `  Best for: ${t.bestFor}`,
             `  Needs photo: ${t.needsPhoto}`,
+            `  Tags: ${t.tags?.join(", ") || "none"}`,
             `  Required: ${requiredSlots.join(", ") || "none"}`,
             `  Optional: ${optionalSlots.join(", ") || "none"}`,
             "",

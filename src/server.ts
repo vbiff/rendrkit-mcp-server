@@ -5,6 +5,7 @@ import { registerGetImageTool } from "./tools/get-image.js";
 import { registerListBrandKitsTool } from "./tools/list-brand-kits.js";
 import { registerGetUsageTool } from "./tools/get-usage.js";
 import { registerListTemplatesTool } from "./tools/list-templates.js";
+import { registerUploadImageTool } from "./tools/upload-image.js";
 
 export function createServer(client: RendrKitClient): McpServer {
   const server = new McpServer({
@@ -17,6 +18,7 @@ export function createServer(client: RendrKitClient): McpServer {
   registerListBrandKitsTool(server, client);
   registerGetUsageTool(server, client);
   registerListTemplatesTool(server, client);
+  registerUploadImageTool(server, client);
 
   return server;
 }

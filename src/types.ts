@@ -6,6 +6,8 @@ export interface GeneratedImage {
   height: number;
   prompt: string;
   style: string;
+  mode?: "direct" | "prompt";
+  templateId?: string;
   createdAt: string;
 }
 
@@ -67,7 +69,17 @@ export interface Template {
   description: string;
   bestFor: string;
   needsPhoto: boolean;
+  tags: string[];
   slots: TemplateSlot[];
+  exampleSlots: Record<string, string>;
+}
+
+/** Response from the upload endpoint */
+export interface UploadResult {
+  url: string;
+  filename: string;
+  size: number;
+  mimeType: string;
 }
 
 /** Response from the templates endpoint */

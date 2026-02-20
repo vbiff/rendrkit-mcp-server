@@ -10,6 +10,7 @@ import { registerGetImageTool } from "../src/tools/get-image.js";
 import { registerListBrandKitsTool } from "../src/tools/list-brand-kits.js";
 import { registerGetUsageTool } from "../src/tools/get-usage.js";
 import { registerListTemplatesTool } from "../src/tools/list-templates.js";
+import { registerUploadImageTool } from "../src/tools/upload-image.js";
 import { createServer } from "../src/server.js";
 
 describe("Tool Registration", () => {
@@ -94,7 +95,7 @@ describe("Tool Registration", () => {
     );
   });
 
-  it("should register all 5 tools via createServer", () => {
+  it("should register all 6 tools via createServer", () => {
     const mcpServer = createServer(client);
 
     // Tools are already registered during createServer, so we verify
@@ -110,8 +111,9 @@ describe("Tool Registration", () => {
     registerListBrandKitsTool(server2, client);
     registerGetUsageTool(server2, client);
     registerListTemplatesTool(server2, client);
+    registerUploadImageTool(server2, client);
 
-    expect(spy2).toHaveBeenCalledTimes(5);
+    expect(spy2).toHaveBeenCalledTimes(6);
   });
 });
 
