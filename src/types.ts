@@ -53,6 +53,42 @@ export interface GenerateImageParams {
   slots?: Record<string, string>;
   photoQuery?: string;
   imageUrl?: string;
+  font?: string;
+  logoUrl?: string;
+  logoPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  background?: "auto" | "photo" | "gradient";
+  variants?: number;
+}
+
+/** Parameters for batch render */
+export interface BatchRenderParams {
+  templateId: string;
+  items: Array<{
+    slots: Record<string, string>;
+    imageUrl?: string;
+  }>;
+}
+
+/** Response from batch render */
+export interface BatchRenderResponse {
+  images: GeneratedImage[];
+  errors?: Array<{ index: number; code: string; message: string }>;
+}
+
+/** Parameters for cloning a template */
+export interface CloneTemplateParams {
+  templateId: string;
+  name: string;
+  defaultSlots?: Record<string, string>;
+}
+
+/** A user-created template clone */
+export interface UserTemplate {
+  id: string;
+  baseTemplateId: string;
+  name: string;
+  defaultSlots: Record<string, string>;
+  createdAt: string;
 }
 
 /** A single slot definition within a template */

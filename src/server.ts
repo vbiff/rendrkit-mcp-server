@@ -6,11 +6,13 @@ import { registerListBrandKitsTool } from "./tools/list-brand-kits.js";
 import { registerGetUsageTool } from "./tools/get-usage.js";
 import { registerListTemplatesTool } from "./tools/list-templates.js";
 import { registerUploadImageTool } from "./tools/upload-image.js";
+import { registerBatchRenderTool } from "./tools/batch-render.js";
+import { registerCloneTemplateTool } from "./tools/clone-template.js";
 
 export function createServer(client: RendrKitClient): McpServer {
   const server = new McpServer({
     name: "rendrkit",
-    version: "0.2.0",
+    version: "0.3.0",
   });
 
   registerGenerateImageTool(server, client);
@@ -19,6 +21,8 @@ export function createServer(client: RendrKitClient): McpServer {
   registerGetUsageTool(server, client);
   registerListTemplatesTool(server, client);
   registerUploadImageTool(server, client);
+  registerBatchRenderTool(server, client);
+  registerCloneTemplateTool(server, client);
 
   return server;
 }

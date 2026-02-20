@@ -6,6 +6,10 @@ import type {
   GenerateImageParams,
   TemplatesResponse,
   UploadResult,
+  BatchRenderParams,
+  BatchRenderResponse,
+  CloneTemplateParams,
+  UserTemplate,
 } from "./types.js";
 
 export interface UploadImageParams {
@@ -78,6 +82,11 @@ export class RendrKitClient {
     if (params.size) body.size = params.size;
     if (params.style) body.style = params.style;
     if (params.brandKitId) body.brandKitId = params.brandKitId;
+    if (params.font) body.font = params.font;
+    if (params.logoUrl) body.logoUrl = params.logoUrl;
+    if (params.logoPosition) body.logoPosition = params.logoPosition;
+    if (params.background) body.background = params.background;
+    if (params.variants) body.variants = params.variants;
     return this.request<GeneratedImage>("POST", "/api/v1/generate", body);
   }
 
@@ -95,6 +104,22 @@ export class RendrKitClient {
 
   async getUsage(): Promise<UsageStats> {
     return this.request<UsageStats>("GET", "/api/v1/usage");
+  }
+
+  async batchRender(params: BatchRenderParams): Promise<BatchRenderResponse> {
+    return this.request<BatchRenderResponse>("POST", "/api/v1/generate/batch-render", params);
+  }
+
+  async cloneTemplate(params: CloneTemplateParams): Promise<UserTemplate> {
+    return this.request<UserTemplate>("POST", "/api/v1/templates/clone", {
+      templateId: params.templateId,
+      name: params.name,
+      defaultSlots: params.defaultSlots,
+    });
+  }
+
+  async listUserTemplates(): Promise<UserTemplate[]> {
+    return this.request<UserTemplate[]>("GET", "/api/v1/templates/mine");
   }
 
   async uploadImage(params: UploadImageParams): Promise<UploadResult> {

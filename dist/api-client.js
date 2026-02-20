@@ -37,12 +37,37 @@ export class RendrKitClient {
         return (await response.json());
     }
     async generateImage(params) {
-        return this.request("POST", "/api/v1/generate", {
-            prompt: params.prompt,
-            size: params.size,
-            style: params.style,
-            brandKitId: params.brandKitId,
-        });
+        const body = {};
+        if (params.prompt)
+            body.prompt = params.prompt;
+        if (params.templateId)
+            body.templateId = params.templateId;
+        if (params.slots)
+            body.slots = params.slots;
+        if (params.photoQuery)
+            body.photoQuery = params.photoQuery;
+        if (params.imageUrl)
+            body.imageUrl = params.imageUrl;
+        if (params.size)
+            body.size = params.size;
+        if (params.style)
+            body.style = params.style;
+        if (params.brandKitId)
+            body.brandKitId = params.brandKitId;
+        if (params.font)
+            body.font = params.font;
+        if (params.logoUrl)
+            body.logoUrl = params.logoUrl;
+        if (params.logoPosition)
+            body.logoPosition = params.logoPosition;
+        if (params.background)
+            body.background = params.background;
+        if (params.variants)
+            body.variants = params.variants;
+        return this.request("POST", "/api/v1/generate", body);
+    }
+    async listTemplates() {
+        return this.request("GET", "/api/v1/templates");
     }
     async getImage(id) {
         return this.request("GET", `/api/v1/images/${id}`);
@@ -52,5 +77,28 @@ export class RendrKitClient {
     }
     async getUsage() {
         return this.request("GET", "/api/v1/usage");
+    }
+    async batchRender(params) {
+        return this.request("POST", "/api/v1/generate/batch-render", params);
+    }
+    async cloneTemplate(params) {
+        return this.request("POST", "/api/v1/templates/clone", {
+            templateId: params.templateId,
+            name: params.name,
+            defaultSlots: params.defaultSlots,
+        });
+    }
+    async listUserTemplates() {
+        return this.request("GET", "/api/v1/templates/mine");
+    }
+    async uploadImage(params) {
+        const body = {};
+        if (params.url)
+            body.url = params.url;
+        if (params.base64)
+            body.base64 = params.base64;
+        if (params.mimeType)
+            body.mimeType = params.mimeType;
+        return this.request("POST", "/api/v1/upload", body);
     }
 }

@@ -1,15 +1,32 @@
 import { z } from "zod/v4";
 export function registerGenerateImageTool(server, client) {
     server.registerTool("generate_image", {
-        description: "Generate a professionally designed image from a text description. Creates production-ready images with clean layouts, crisp text, and consistent branding. Perfect for social media posts, banners, OG images, thumbnails, and more.",
+        description: "Generate a marketing image. Two modes: (1) Prompt mode — provide a text prompt and AI picks the template. (2) Direct mode (recommended) — provide templateId + slots for precise control. Use list_templates to see available templates.",
         inputSchema: {
             prompt: z
                 .string()
-                .describe("Description of the image to generate"),
-            size: z
+                .optional()
+                .describe("Text prompt describing the image (used in prompt mode)"),
+            template_id: z
                 .string()
                 .optional()
-                .describe("Image dimensions (e.g. '1080x1080', '1200x628', '1280x720')"),
+                .describe("Template ID for direct render mode. Use list_templates to see options."),
+            slots: z
+                .record(z.string(), z.string())
+                .optional()
+                .describe("Template slot values. Keys are slot names, values are strings."),
+            photo_query: z
+                .string()
+                .optional()
+                .describe("1-3 word search query for background photo (e.g. 'italian restaurant'). Only used with photo templates when no image_url is provided."),
+            image_url: z
+                .string()
+                .optional()
+                .describe("URL of your own image to use as background"),
+            size: z
+                .enum(["1080x1080", "1200x628", "1080x1920", "1200x1200", "1280x720"])
+                .optional()
+                .describe("Image size: '1080x1080' (Instagram, default), '1200x628' (OG/Twitter), '1080x1920' (Stories/Reels), '1200x1200' (Instagram HD), '1280x720' (YouTube)"),
             style: z
                 .enum(["modern", "playful", "corporate", "dark", "minimal", "bold"])
                 .optional()
@@ -18,15 +35,57 @@ export function registerGenerateImageTool(server, client) {
                 .string()
                 .optional()
                 .describe("ID of a saved brand kit to use for consistent branding"),
+            font: z
+                .string()
+                .optional()
+                .describe("Google Font name to use (e.g. 'Poppins', 'Playfair Display')"),
+            logo_url: z
+                .string()
+                .optional()
+                .describe("HTTPS URL of a logo to overlay on the image"),
+            logo_position: z
+                .enum(["top-left", "top-right", "bottom-left", "bottom-right"])
+                .optional()
+                .describe("Position of the logo overlay. Default: bottom-right"),
+            background: z
+                .enum(["auto", "photo", "gradient"])
+                .optional()
+                .describe("Background type: auto (AI decides), photo (force photo search), gradient (no photo)"),
+            variants: z
+                .number()
+                .optional()
+                .describe("Number of design variants to generate (1-3). Each variant has different colors/layout."),
         },
-    }, async ({ prompt, size, style, brand_kit_id }) => {
+    }, async ({ prompt, template_id, slots, photo_query, image_url, size, style, brand_kit_id, font, logo_url, logo_position, background, variants }) => {
         try {
-            const image = await client.generateImage({
+            const result = await client.generateImage({
                 prompt,
+                templateId: template_id,
+                slots,
+                photoQuery: photo_query,
+                imageUrl: image_url,
                 size,
                 style,
                 brandKitId: brand_kit_id,
+                font,
+                logoUrl: logo_url,
+                logoPosition: logo_position,
+                background,
+                variants,
             });
+            // Variants > 1 returns { images: [...] } instead of a single image
+            if (variants && variants > 1) {
+                const multi = result;
+                const lines = multi.images.map((img, i) => `Variant ${i + 1}: ${img.url} (template: ${img.templateId})`);
+                return {
+                    content: [
+                        {
+                            type: "text",
+                            text: `Generated ${multi.images.length} variants!\n\n${lines.join("\n")}`,
+                        },
+                    ],
+                };
+            }
             return {
                 content: [
                     {
@@ -34,13 +93,14 @@ export function registerGenerateImageTool(server, client) {
                         text: [
                             `Image generated successfully!`,
                             ``,
-                            `URL: ${image.url}`,
-                            `ID: ${image.id}`,
-                            `Size: ${image.width}x${image.height}`,
-                            `Style: ${image.style}`,
-                            `Prompt: ${image.prompt}`,
-                            `Created: ${image.createdAt}`,
-                        ].join("\n"),
+                            `URL: ${result.url}`,
+                            `ID: ${result.id}`,
+                            `Size: ${result.width}x${result.height}`,
+                            result.templateId ? `Template: ${result.templateId}` : null,
+                            `Style: ${result.style}`,
+                            `Prompt: ${result.prompt}`,
+                            `Created: ${result.createdAt}`,
+                        ].filter(Boolean).join("\n"),
                     },
                 ],
             };
