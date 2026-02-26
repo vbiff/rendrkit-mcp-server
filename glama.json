@@ -1,0 +1,6 @@
+{
+  "name": "RendrKit",
+  "description": "Design API for AI agents - generate images from text prompts",
+  "website": "https://rendrkit.dev",
+  "tags": ["mcp", "image-generation", "design-api", "ai-agents"]
+}
