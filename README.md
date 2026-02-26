@@ -2,6 +2,10 @@
 
 MCP (Model Context Protocol) server for RendrKit. Lets AI assistants like Claude Desktop and Cursor generate professionally designed images via the RendrKit API.
 
+<a href="https://glama.ai/mcp/servers/@vbiff/rendr-kit">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@vbiff/rendr-kit/badge" alt="RendrKit MCP server" />
+</a>
+
 ## Installation
 
 ### Claude Desktop
